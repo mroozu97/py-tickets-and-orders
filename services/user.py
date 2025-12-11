@@ -1,6 +1,3 @@
-# from django.db.models import QuerySet
-from django.db.models import QuerySet
-
 from db.models import User
 
 
@@ -8,7 +5,7 @@ def create_user(username: str,
                 password: str,
                 email: str = None,
                 first_name: str = None,
-                last_name: str = None) -> QuerySet:
+                last_name: str = None) -> User:
     user = User.objects.create_user(
         username=username,
         password=password,
