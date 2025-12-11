@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-# from django.contrib.auth.models import User, AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Index, UniqueConstraint
@@ -75,7 +74,7 @@ class Order(models.Model):
         related_name="orders")
 
     def __str__(self) -> str:
-        return str(self.created_at)
+        return f"<Order: {self.created_at}>"
 
     class Meta:
         ordering = ["-created_at"]
@@ -83,16 +82,17 @@ class Order(models.Model):
 
 class Ticket(models.Model):
     movie_session = models.ForeignKey(
-        to=MovieSession, on_delete=models.CASCADE,)
+        to=MovieSession, on_delete=models.CASCADE,
+        related_name="tickets")
     order = models.ForeignKey(to=Order, on_delete=models.CASCADE,
                               related_name="tickets")
     row = models.IntegerField()
     seat = models.IntegerField()
 
     def __str__(self) -> str:
-        return (f"{self.movie_session.movie.title} "
+        return (f"<Ticket: {self.movie_session.movie.title} "
                 f"{self.movie_session.show_time} "
-                f"(row: {self.row}, seat: {self.seat})")
+                f"(row: {self.row}, seat: {self.seat})>")
 
     def clean(self) -> None:
         max_row = self.movie_session.cinema_hall.rows
@@ -123,4 +123,3 @@ class Ticket(models.Model):
             UniqueConstraint(fields=["row", "seat", "movie_session"],
                              name="unique_row_seat_movie_session")
         ]
-        # ordering = ["-order.created_at"]

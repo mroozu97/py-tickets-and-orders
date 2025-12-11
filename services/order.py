@@ -1,15 +1,17 @@
 from django.db.models import QuerySet
-
-from db.models import Ticket, Order, User, MovieSession
-import datetime
+from db.models import Ticket, Order, MovieSession
 from django.db import transaction
+import datetime
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 @transaction.atomic
-def create_order(tickets: dict,
+def create_order(tickets: list[dict],
                  username: str,
                  date: datetime = None) -> Order:
-    user = User.objects.get(username=username)
+    user = (get_user_model().
+            objects.get(username=username))
     order = Order.objects.create(user=user)
 
     if date:
@@ -17,8 +19,8 @@ def create_order(tickets: dict,
         order.save()
 
     for ticket in tickets:
-        ms_id = MovieSession.objects.get(pk=ticket["movie_session"],)
-        Ticket.objects.create(movie_session=ms_id,
+        movie_session = MovieSession.objects.get(pk=ticket["movie_session"],)
+        Ticket.objects.create(movie_session=movie_session,
                               order=order,
                               row=ticket["row"],
                               seat=ticket["seat"],)
